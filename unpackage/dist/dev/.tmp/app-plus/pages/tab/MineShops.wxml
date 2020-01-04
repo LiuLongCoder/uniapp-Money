@@ -1,0 +1,1 @@
+<view class="content"><scroll-view><block wx:for="{{shopList}}" wx:for-item="shop" wx:for-index="sIdx" wx:key="sIdx"><view class="shopCell"><text>{{shop.name}}</text><text>{{shop.mobile}}</text></view></block></scroll-view></view>

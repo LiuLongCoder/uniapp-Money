@@ -1,0 +1,128 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/tab/MineCards",
+			"style": {
+				"navigationBarTitleText": "我的信用卡",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text":"添加",
+							"fontSize":"28upx",
+							"float":"right"
+							}
+						]
+					}
+				}
+			}
+		},
+		{
+			"path": "pages/tab/MineShops",
+			"style": {
+				"navigationBarTitleText": "我的门店",
+				"app-plus": {
+					"titleNView": {
+						"buttons": [{
+							"text":"添加",
+							"fontSize":"28upx",
+							"float":"right"
+							}
+						]
+					}
+				}
+			}
+		},
+		{
+			"path": "pages/tab/Me",
+			"style": {
+				"navigationBarTitleText": "我"
+			}
+		},
+		{
+			"path": "pages/login",
+			"style": {
+				"navigationBarTitleText": "登录"
+			}
+		},
+		{
+			"path": "pages/register",
+			"style": {
+				"navigationBarTitleText": "注册"
+			}
+		},
+		{
+			"path": "pages/ModifyPassword",
+			"style": {
+				"navigationBarTitleText": "修改密码"
+			}
+		},
+		{
+			"path": "pages/ModifyUserInfo",
+			"style": {
+				"navigationBarTitleText": "修改用戶信息"
+			}
+		},
+		{
+			"path": "pages/AddCreditCard",
+			"style": {
+				"navigationBarTitleText": "添加信用卡"
+			}
+		},
+		{
+			"path": "pages/AddShop",
+			"style": {
+				"navigationBarTitleText": "添加门店"
+			}
+		},
+		{
+			"path": "pages/SpendRecord",
+			"style": {
+				"navigationBarTitleText": "信用卡消费记录"
+			}
+		},
+		{
+			"path": "pages/AddPayRecord",
+			"style": {
+				"navigationBarTitleText": "增加消费记录"
+			}
+		},
+		{
+			"path": "pages/PayRecode",
+			"style": {
+				"navigationBarTitleText": "消费记录",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#007AFF",
+		"borderStyle": "black",
+		"backgroundColor": "#F8F8F8",
+		"list": [{
+				"pagePath":"pages/tab/MineCards",
+				"text":"信用卡"
+			},
+			{
+				"pagePath":"pages/tab/MineShops",
+				"text":"门店"
+			},
+			{
+				"pagePath":"pages/tab/Me",
+				"text":"我"
+			}
+		]
+	}
+}

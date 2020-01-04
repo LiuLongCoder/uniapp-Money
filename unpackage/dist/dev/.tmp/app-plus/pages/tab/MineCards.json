@@ -1,0 +1,13 @@
+{
+  "navigationBarTitleText": "我的信用卡",
+  "titleNView": {
+    "buttons": [
+      {
+        "text": "添加",
+        "fontSize": "28upx",
+        "float": "right"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

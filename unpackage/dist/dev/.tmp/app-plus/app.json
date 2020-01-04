@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/tab/MineCards",
+    "pages/tab/MineShops",
+    "pages/tab/Me",
+    "pages/login",
+    "pages/register",
+    "pages/ModifyPassword",
+    "pages/ModifyUserInfo",
+    "pages/AddCreditCard",
+    "pages/AddShop",
+    "pages/SpendRecord",
+    "pages/AddPayRecord",
+    "pages/PayRecode",
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  },
+  "tabBar": {
+    "color": "#7A7E83",
+    "selectedColor": "#007AFF",
+    "borderStyle": "black",
+    "backgroundColor": "#F8F8F8",
+    "list": [
+      {
+        "pagePath": "pages/tab/MineCards",
+        "text": "信用卡"
+      },
+      {
+        "pagePath": "pages/tab/MineShops",
+        "text": "门店"
+      },
+      {
+        "pagePath": "pages/tab/Me",
+        "text": "我"
+      }
+    ]
+  },
+  "nvueCompiler": "uni-app",
+  "renderer": "auto",
+  "splashscreen": {
+    "alwaysShowBeforeRender": true,
+    "autoclose": false
+  },
+  "appname": "Money",
+  "compilerVersion": "2.3.7",
+  "usingComponents": {}
+}
