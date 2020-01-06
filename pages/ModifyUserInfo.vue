@@ -6,11 +6,11 @@
 		</view>
 		<view class="inline IDCardView commmonInputContainer">
 			<text class="labelText">身份证号：</text>
-			<input class="IDCardInput" placeholder="请输入身份证号" @input="onIDCardKeyInput" :value="IDCard" />
+			<input class="IDCardInput" type="idcard" placeholder="请输入身份证号" @input="onIDCardKeyInput" :value="IDCard" />
 		</view>
 		<view class="inline mobileView commmonInputContainer">
 			<text class="labelText">联系电话：</text>
-			<input class="mobileInput" placeholder="请输入手机号码" @input="onMobileKeyInput" :value="mobile" />
+			<input class="mobileInput" type="number" placeholder="请输入手机号码" @input="onMobileKeyInput" :value="mobile" />
 		</view>
 		<button class="modifyBtn" type="primary" @click="modifyInfoAction"> 修改 </button>
 	</view>
@@ -49,21 +49,24 @@
 				if (!this.name) {
 					uni.showModal({
 						title: '提示',
-						content: '请输入姓名'
+						content: '请输入姓名',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.IDCard) {+
 					uni.showModal({
 						title:'提示',
-						content: '请输入身份证号码'
+						content: '请输入身份证号码',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.mobile) {
 					uni.showModal({
 						title:'提示',
-						content: '请输入手机号码'
+						content: '请输入手机号码',
+						showCancel:false
 					})
 					return
 				}
@@ -73,7 +76,8 @@
 					if (err) {
 						uni.showModal({
 							title: '警报',
-							content: err.errMsg
+							content: err.errMsg,
+							showCancel:false
 						})
 						console.error('<err> modify user err: ', err)
 					} else {
@@ -95,6 +99,7 @@
 							uni.showModal({
 								title: '提示',
 								content: res.Header.ErrMsg,
+								showCancel:false
 							})
 							console.error('<err> register user err: ', res.Header.ErrMsg)
 						}

@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="inline commmonInputContainer">
 			<text class="labelText">卡号：</text>
-			<input class="" placeholder="请输入卡号" @input="onCardNumberKeyInput" :value="cardNumber" />
+			<input class="" type="number" placeholder="请输入卡号" @input="onCardNumberKeyInput" :value="cardNumber" />
 		</view>
 		<view class="inline commmonInputContainer">
 			<text class="labelText">银行：</text>
@@ -10,19 +10,19 @@
 		</view>
 		<view class="inline commmonInputContainer">
 			<text class="labelText">手机号：</text>
-			<input class="" placeholder="请输入预留手机号(选填)" @input="onMobileKeyInput" :value="mobile" />
+			<input class="" type="number" placeholder="请输入预留手机号(选填)" @input="onMobileKeyInput" :value="mobile" />
 		</view>
 		<view class="inline commmonInputContainer">
 			<text class="labelText">额度：</text>
-			<input class="" placeholder="请输入额度(元)" @input="onLimitKeyInput" :value="limit" />
+			<input class="" type="number" placeholder="请输入额度(元)" @input="onLimitKeyInput" :value="limit" />
 		</view>
 		<view class="inline commmonInputContainer">
 			<text class="labelText">账单日：</text>
-			<input class="" placeholder="请输入账单日1-31" @input="onBillDayKeyInput" :value="billDayStr" />
+			<input class="" type="number" placeholder="请输入账单日" @input="onBillDayKeyInput" :value="billDayStr" />
 		</view>
 		<view class="inline commmonInputContainer">
 			<text class="labelText">还款日：</text>
-			<input class="" placeholder="请输入还款日1-31" @input="onRepaymentDayKeyInput" :value="repaymentDayStr" />
+			<input class="" type="number" placeholder="请输入还款日" @input="onRepaymentDayKeyInput" :value="repaymentDayStr" />
 		</view>
 		<button class="addCardBtn" type="primary" @click="addCardAction"> 添加 </button>
 	</view>
@@ -58,14 +58,16 @@
 				if (!this.cardNumber) {
 					uni.showModal({
 						title: '提示',
-						content: '请输入卡号'
+						content: '请输入卡号',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.bank) {+
 					uni.showModal({
 						title:'提示',
-						content: '请输入所属银行'
+						content: '请输入所属银行',
+						showCancel:false
 					})
 					return
 				}
@@ -73,31 +75,35 @@
 				if (!this.limit) {
 					uni.showModal({
 						title:'提示',
-						content: '请输入额度'
+						content: '请输入额度',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.billDayStr) {
 					uni.showModal({
 						title:'提示',
-						content: '请输入账单日'
+						content: '请输入账单日',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.repaymentDayStr) {
 					uni.showModal({
 						title:'提示',
-						content: '请输入还款日'
+						content: '请输入还款日',
+						showCancel:false
 					})
 					return
 				}
 				let userId = Util.getUserId()
-				let addCardJson = {userId: userId, cardNumber: this.cardNumber, bank: this.bank, mobile: this.mobile, limit: parseInt(this.limit), billDayStr: this.billDayStr, repaymentDayStr: this.repaymentDayStr}
+				let addCardJson = {user: userId, cardNumber: this.cardNumber, bank: this.bank, mobile: this.mobile, limit: parseInt(this.limit), billDayStr: this.billDayStr, repaymentDayStr: this.repaymentDayStr}
 				Util.post('/money/v1/user/addCreditCard', addCardJson, (err, res) => {
-					if (error) {
+					if (err) {
 						uni.showModal({
 							title: '警报',
-							content: err
+							content: err.errMsg,
+							showCancel:false
 						})
 						console.error('<err> modify user err: ', err)
 					} else {
@@ -124,7 +130,8 @@
 						} else {
 							uni.showModal({
 								title: '警报',
-								content: res.Header.ErrMsg
+								content: res.Header.ErrMsg,
+								showCancel:false
 							})
 							console.error('<err> add credit err: ', res.Header.ErrMsg)
 						}

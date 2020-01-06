@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="commmonInputContainer">
 			<text class="accountText">手机号:</text>
-			<input class="mobileInput" @input="onMobileKeyInput"/>
+			<input class="mobileInput" type="number" @input="onMobileKeyInput"/>
 		</view>
 		<view class="commmonInputContainer">
 			<text class="accountText">密码:</text>
@@ -41,22 +41,26 @@
 				if (!this.mobile) {
 					uni.showModal({
 						title:'提示',
-						content: '请输入手机号'
+						content: '请输入手机号',
+						showCancel:false
 					})
 					return 
 				}
 				if (!this.password) {
 					uni.showModal({
 						title:'提示',
-						content: '请输入密码'
+						content: '请输入密码',
+						showCancel:false
 					})
 					return 
 				}
 				Util.get('/money/v1/user/login', {mobile: this.mobile, password: Util.md5(this.password).toLowerCase()}, (err, res) => {
-					if (err) {uni.showModal({
-								title: '警报',
-								content: err.errMsg
-							})
+					if (err) {
+						uni.showModal({
+							title: '警报',
+							content: err.errMsg,
+							showCancel:false
+						})
 						console.error('<err> login err: ', err)
 					} else {
 						if (res.isSuccess()) {
@@ -79,7 +83,8 @@
 						} else {
 							uni.showModal({
 								title: '警报',
-								content: res.Header.ErrMsg
+								content: res.Header.ErrMsg,
+								showCancel:false
 							})
 							console.error('login err: ', res.Header.ErrMsg)
 						}

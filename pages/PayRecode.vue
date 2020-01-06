@@ -71,6 +71,10 @@
 		onLoad(option) {
 			this.cardId = option.cardId
 			this.shopId = option.shopId
+			let title = option.title
+			if (title) {
+				uni.setNavigationBarTitle({ title: title })
+			}
 			this._requestPayRecords()
 		},
 		onShow() {
@@ -104,10 +108,12 @@
 			bindFromDateChange(e) {
 				this.fromDate = e.target.value
 				this.initData()
+				this.dateChecked = true
 			},
 			bindToDateChange(e) {
 				this.toDate = e.target.value
 				this.initData()
+				this.dateChecked = true
 			},
 			percentFormat(num) {
 				let strFormt = num.toFixed(3) * 100 + ''
@@ -153,6 +159,15 @@
 						page: this.page + 1,
 						pageSize: this.pageSize
 					}
+					// 添加门店过滤
+					if (this.shopId) {
+						paramJson.shopIds = this.shopId
+					}
+					// 添加信用卡过滤
+					if (this.cardId) {
+						paramJson.cardIds = this.cardId
+					}
+					// 添加时间过滤
 					if (this.dateChecked) {
 						let fDate = new Date(this.fromDate)
 						let tDate = new Date(this.toDate)
@@ -163,7 +178,8 @@
 							paramJson.toDate = toDateStr
 						} else {
 							uni.showModal({
-								content: '请保证时间先后顺序'
+								content: '请保证时间先后顺序',
+								showCancel:false
 							})
 							this.initData()
 							return
@@ -204,7 +220,6 @@
 		padding-left: 20upx;
 		padding-right: 20upx;
 	}
-
 	.conditionView {
 		display: flex;
 		justify-content: space-between;
@@ -212,44 +227,36 @@
 		margin-top: 30upx;
 		margin-bottom: 30upx;
 	}
-
 	.pickerText {
 		padding: 8upx 15upx 8upx 5upx;
 		border: #007AFF 1px solid;
 		border-radius: 8upx;
 	}
-
 	.searchText {
 		padding: 8upx 15upx 8upx 5upx;
 		border: #0000FF 1px solid;
 		border-radius: 8upx;
 	}
-
 	.block {
 		display: block;
 	}
-
 	.cardView {
 		margin-top: 20upx;
 	}
-
 	.recordCell {
 		display: flex;
 		justify-content: flex-start;
 	}
-
 	.inline {
 		display: flex;
 		align-items: center;
 		align-content: center;
 	}
-
 	text {
 		font-size: 24upx;
 		color: #666;
 		margin-left: 10upx;
 	}
-
 	.bottomTipView {
 		display: flex;
 		justify-content: center;

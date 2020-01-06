@@ -2,15 +2,15 @@
 	<view class="content">
 		<view class="inline oriPwdView commmonInputContainer">
 			<text class="labelText">原密码：</text>
-			<input class="oriPwdInput" placeholder="请输入原密码" @input="oriPwdKeyInput" :value="oriPwd" />
+			<input class="oriPwdInput" password="true" placeholder="请输入原密码" @input="oriPwdKeyInput" :value="oriPwd" />
 		</view>
 		<view class="inline pwdView commmonInputContainer">
 			<text class="labelText">新密码：</text>
-			<input class="pwdInput" placeholder="请输入新密码" @input="onPwdKeyInput" :value="pwd" />
+			<input class="pwdInput" password="true" placeholder="请输入新密码" @input="onPwdKeyInput" :value="pwd" />
 		</view>
 		<view class="inline confirmPwdView commmonInputContainer">
 			<text class="labelText">确认密码：</text>
-			<input class="confirmPwdInput" placeholder="请确认密码" @input="onConfirmPwdKeyInput" :value="confirmPwd" />
+			<input class="confirmPwdInput" password="true" placeholder="请确认密码" @input="onConfirmPwdKeyInput" :value="confirmPwd" />
 		</view>
 		<button class="modifyBtn" type="primary" @click="registerAction"> 修改 </button>
 	</view>
@@ -46,28 +46,32 @@
 				if (!this.oriPwd) {
 					uni.showModal({
 						title:'提示',
-						content:'请输入原密码'
+						content:'请输入原密码',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.pwd) {
 					uni.showModal({
 						title:'提示',
-						content:'请输入新密码'
+						content:'请输入新密码',
+						showCancel:false
 					})
 					return
 				}
 				if (!this.confirmPwd) {
 					uni.showModal({
 						title:'提示',
-						content:'请确认新密码'
+						content:'请确认新密码',
+						showCancel:false
 					})
 					return
 				}
 				if (this.pwd !== this.confirmPwd) {
 					uni.showModal({
 						title:'提示',
-						content:'两次输入的密码不一致'
+						content:'两次输入的密码不一致',
+						showCancel:false
 					})
 					return
 				}
@@ -76,7 +80,8 @@
 					if (err) {
 						uni.showModal({
 							title: '警报',
-							content: err.errMsg
+							content: err.errMsg,
+							showCancel:false
 						})
 						console.error('<err> modify pwd err: ', err)
 					} else {
@@ -91,7 +96,8 @@
 						} else {
 							uni.showModal({
 								title:'修改密码失败',
-								content:res.Header.ErrMsg
+								content:res.Header.ErrMsg,
+								showCancel:false
 							})
 						}
 					}

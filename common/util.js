@@ -2,8 +2,23 @@ const User = require('./user.js')
 const Response = require('./response.js')
 const MD5 = require('./md5.js')
 
+// h5 node server npm : connect-history-api-fallback
+let globalUUID = ''
+// #ifdef APP-PLUS
+plus.device.getInfo({
+		success:function(e){
+			globalUUID = e.uuid
+			console.log('getDeviceInfo success: '+JSON.stringify(e));
+		},
+		fail:function(e){
+			console.log('getDeviceInfo failed: '+JSON.stringify(e));
+		}
+	});
+// #endif
+
 const Constant = {
-	serverHost: 'http://192.168.2.38:3000',
+	serverHost: 'http://liulong.site',
+	// serverHost: 'http://192.168.2.38',
 	userId: _getUserId(),
 	StorageKey_UserId: 'StorageKey_UserId',
 	StorageKey_UserJson: 'StorageKey_UserJson',
@@ -35,18 +50,24 @@ function _request(url, method, param, callback, complete) {
 		} else {
 			url = Constant.serverHost + url
 		}
-		
 	}
 	
 	let osType = uni.getSystemInfoSync().platform // iOS , Android
 	let region = '0' // 0: bookCity, 1: Snaplearn
-	let headerJson = {userId: _getUserId(), osType: osType, appVersion: '5.40.0', deviceId: '5F3E6EB4-CA01-42B0-BD77-0E72DA409618',}
+	let headerJson = {userId: _getUserId(), osType: osType, deviceId: globalUUID, timstamp: new Date().getTime()}
+	// #ifdef APP-PLUS
+	headerJson.appVersion = plus.runtime.version
+	// #endif
+	let jsonString = JSON.stringify(headerJson)
+	let signature = MD5.hex_md5('luka' + jsonString + 'luka').toLowerCase()
+	headerJson.jsonString = jsonString
+	headerJson.signature = signature
 	let headerJsonEncoderStr  = JSON.stringify(headerJson)
 	
 	uni.request({
 		url: url,
 		method: method,
-		header:{'money-param': headerJsonEncoderStr},
+		header:{'money-header': headerJsonEncoderStr},
 		data: param,
 		success: res => {
 			// res.data.Body = MXREncryption.decryptionMxr(res.data.Body, true)

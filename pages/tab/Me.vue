@@ -1,11 +1,11 @@
 <template>
 	<view class="content">
-		<view class="cell" v-if="loginStatus">
-			<button type="primary" @click="modifyInfoAction">修改信息</button>
-			<button type="primary" @click="modifyPasswordAction">修改密码</button>
-			<button type="primary" @click="logoutAction">退出登录</button>
+		<view v-if="loginStatus">
+			<button class="commonBtn" type="primary" @click="modifyInfoAction">修改信息</button>
+			<button class="commonBtn" type="primary" @click="modifyPasswordAction">修改密码</button>
+			<button class="commonBtn" type="primary" @click="logoutAction">退出登录</button>
 		</view>
-		<view class="cell" v-else>
+		<view v-else>
 			<button class="commonBtn" type="primary" @click="loginAction">登录</button>
 		</view>
 	</view>
@@ -72,7 +72,6 @@
 	}
 	.commonBtn {
 		margin-top: 40upx;
-		width: 80%;
 		height: 65upx;
 		font-size: 28upx;
 		justify-content: center;

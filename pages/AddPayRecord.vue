@@ -12,6 +12,9 @@
 				<text class="pickerText">{{allShopArrayDataSource[1][shopIndexArray[1]].name}}</text>
 			</picker>
 		</view>
+		<block v-if="shopQRCodeImageSrc">
+			<image :src="shopQRCodeImageSrc" class="qrcodeimage" mode="widthFix"></image>
+		</block>
 		<view class="cell inline">
 			<text>支付途径：</text>
 			<picker class="cardPiker" @change="bindPayWayPickerChange" :value="payWayIndex" :range="payWayArray" range-key="name">
@@ -75,13 +78,14 @@
 				startDate:getDate('start'),
 				endDate:getDate('end'),
 				payWayArray: [],
-				payWayIndex: 0
+				payWayIndex: 0,
+				shopQRCodeImageSrc: undefined
 			}
 		},
 		onLoad(option) {
-			this.cardArray = uni.getStorageSync(Util.Constant.StorageKey_CardList)
-			this.allShopArray = uni.getStorageSync(Util.Constant.StorageKey_AllShopList)
-			this.payWayArray = uni.getStorageSync(Util.Constant.StorageKey_PayWayList)
+			this.cardArray = uni.getStorageSync(Util.Constant.StorageKey_CardList + Util.getUserId())
+			this.allShopArray = uni.getStorageSync(Util.Constant.StorageKey_AllShopList + Util.getUserId())
+			this.payWayArray = uni.getStorageSync(Util.Constant.StorageKey_PayWayList + Util.getUserId())
 			this._requestAllShopList()
 			this._requestPayWayList()
 			let nowDate = new Date()
@@ -91,7 +95,7 @@
 				if (card.cardNumber && card.cardNumber.length > 8) {
 					card.name = card.bank + card.cardNumber.substring(0, 4) + '****' + card.cardNumber.substr(card.cardNumber.length - 4)
 				} else {
-					card.name = card.bank
+					card.name = card.bank + card.cardNumber
 				}
 			}
 			if (this.allShopArray.length > 0) {
@@ -100,6 +104,7 @@
 					this.allShopArrayDataSource[1] = this.allShopArray[this.shopIndexArray[0]].shopList
 				}
 			}
+			this.refreshQRCodeImg()
 		},
 		onShow() {
 			if (!this.allShopArray || this.allShopArray.length == 0) {
@@ -107,6 +112,17 @@
 			}
 		},
 		methods: {
+			refreshQRCodeImg () {
+				if (this.allShopArrayDataSource[1].length > this.shopIndexArray[1]) {
+					this.shopQRCodeImageSrc = this.allShopArrayDataSource[1][this.shopIndexArray[1]].shopQRCodeImageSrc
+				} else {
+					this.shopQRCodeImageSrc = undefined
+				}
+				if (!this.shopQRCodeImageSrc) {
+					this.shopQRCodeImageSrc = ''
+				}
+				// console.log('>>>> refreshqrcode : ', this.shopQRCodeImageSrc)
+			},
 			onShopNameKeyInput(event) {
 				this.shopName = event.target.value
 			},
@@ -142,6 +158,7 @@
 					}
 				}
 				this.shopIndexArray[column] = value
+				this.refreshQRCodeImg()
 				this.$forceUpdate()
 				console.log(this.shopIndexArray)
 			},
@@ -152,7 +169,7 @@
 					} else {
 						if (res.isSuccess()) {
 							this.allShopArray = res.Body
-							uni.setStorageSync(Util.Constant.StorageKey_AllShopList, this.allShopArray)
+							uni.setStorageSync(Util.Constant.StorageKey_AllShopList + Util.getUserId(), this.allShopArray)
 							this.shopIndexArray = [0, 0]
 							if (this.allShopArray.length > 0) {
 								this.allShopArrayDataSource[0] = this.allShopArray
@@ -160,6 +177,7 @@
 									this.allShopArrayDataSource[1] = this.allShopArray[this.shopIndexArray[0]].shopList
 								}
 							}
+							this.refreshQRCodeImg()
 							console.log('get all shop: ', this.allShopArray)
 						} else {
 							console.error('<error> get all shop error : ', res.Header.ErrMsg)
@@ -171,7 +189,7 @@
 				Util.get('/money/v1/pay/getPayWayList', null, (err, res) => {
 					if (res && res.isSuccess()) {
 						this.payWayArray = res.Body
-						uni.setStorageSync(Util.Constant.StorageKey_PayWayList, this.payWayArray)
+						uni.setStorageSync(Util.Constant.StorageKey_PayWayList + Util.getUserId(), this.payWayArray)
 						console.log('>>> payway: ', this.payWayArray)
 					} else {
 						if (err) {
@@ -195,7 +213,8 @@
 				if (!this.price || parseFloat(this.price) <= 0) {
 					uni.showModal({
 						title:'提示',
-						content:'请输入有效的金额'
+						content:'请输入有效的金额',
+						showCancel:false
 					})
 					return
 				}
@@ -223,7 +242,8 @@
 					} else {
 						uni.showModal({
 							title:'警报',
-							content:(err && err.errMsg) || (res && res.Header.ErrMsg)
+							content:(err && err.errMsg) || (res && res.Header.ErrMsg),
+							showCancel:false
 						})
 					}
 				})
@@ -292,5 +312,9 @@
 		font-size: 28upx;
 		justify-content: center;
 		align-items: center;
+	}
+	.qrcodeimage {
+		margin-top: 30upx;
+		margin-bottom: 30upx;
 	}
 </style>
