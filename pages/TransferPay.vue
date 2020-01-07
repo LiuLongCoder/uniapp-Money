@@ -15,9 +15,13 @@
 				<text class="noMoreDateText">没有数据~</text>
 			</view>
 			<view v-else>
+				<view class="totalMoneyView" v-if="totalMoney > 0">
+					<text>实际总额：</text>
+					<text class="priceText">{{totalMoney}}</text>
+				</view>
 				<view class="" v-bind:key="lIdx" v-for="(luka, lIdx) in lukaList" v-if="luka.spendArray.length > 0">
 					<view v-if="type === 'user'">
-						<view v-if="type === 'user'">
+						<view class="oneCell" v-if="type === 'user'">
 							<text>在</text>
 							<text class="nameText">{{luka.name}}</text>
 							<text>店里</text>
@@ -38,7 +42,7 @@
 						
 					</view>
 					<view v-else>
-						<view class="" v-bind:key="sIdx" v-for="(spendItem, sIdx) in luka.spendArray">
+						<view class="oneCell" v-bind:key="sIdx" v-for="(spendItem, sIdx) in luka.spendArray">
 							<text class="nameText">{{spendItem.user.name}}</text>
 							<text>在 [{{luka.name}}] 店里</text>
 							<text>刷了{{spendItem.count}}笔,共{{spendItem.price}}元</text>
@@ -85,7 +89,8 @@
 				fromStartDate: getDate('start'),
 				fromEndDate: getDate('end'),
 				toStartDate: getDate('start'),
-				toEndDate: getDate('end')
+				toEndDate: getDate('end'),
+				totalMoney: 0
 			}
 		},
 		onNavigationBarButtonTap(e) {
@@ -113,18 +118,21 @@
 				this.dateChecked = !this.dateChecked
 				this.lukaList = []
 				this.loadDataBack = false
+				this.totalMoney = 0
 			},
 			bindFromDateChange(e) {
 				this.fromDate = e.target.value
-				this.lukaList = []
-				this.loadDataBack = false
-				this.dateChecked = true
+				this._initData()
 			},
 			bindToDateChange(e) {
 				this.toDate = e.target.value
+				this._initData()
+			},
+			_initData () {
 				this.lukaList = []
 				this.loadDataBack = false
 				this.dateChecked = true
+				this.totalMoney = 0
 			},
 			_requestIncome () {
 				if (!Util.isLogin()) { return }
@@ -147,6 +155,7 @@
 					}
 				}
 				
+				this.totalMoney = 0
 				Util.get('/money/v1/pay/getIncome', paramJson, (err, res) => {
 					this.loadDataBack = true
 					console.log('get income : ', res)
@@ -158,9 +167,12 @@
 							let spendArray = []
 							for (let key in luka.spendJson) {
 								let spendItem = luka.spendJson[key]
-								let dotIdx = (spendItem.returnPrice + '').indexOf('.')
-								if (dotIdx >= 0) {
-									spendItem.returnPrice = (spendItem.returnPrice + '').substring(0, dotIdx + 3)
+								// let dotIdx = (spendItem.returnPrice + '').indexOf('.')
+								// if (dotIdx >= 0) {
+								// 	spendItem.returnPrice = (spendItem.returnPrice + '').substring(0, dotIdx + 3)
+								// }
+								if (spendItem.returnPrice) {
+									this.totalMoney += spendItem.returnPrice
 								}
 								spendArray.push(spendItem)
 								// luka.spendJson[key].returnPrice = parseFloat(luka.spendJson[key].returnPrice).tof
@@ -216,6 +228,9 @@
 		display: flex;
 		align-items: center;
 		align-content: center;
+	}
+	.oneCell {
+		margin-top: 30upx;
 	}
 	text {
 		font-size: 30upx;

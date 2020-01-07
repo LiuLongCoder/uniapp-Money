@@ -31,9 +31,15 @@
 				<view class="cell">
 					<text>账单日：</text><text>{{cardItem.billDate}}</text><text>还款日：</text><text>{{cardItem.repaymentDate}}</text>
 				</view>
-				<view class="cell repayView" v-if="cardItem.durationCurrentRepayment >= 0 && cardItem.willRepaymentMoney > 0">
-					<text class="redText">{{cardItem.durationCurrentRepayment}}天之内</text>
-					<text class="redText">需要还款：</text><text>{{cardItem.willRepaymentMoney}}</text>
+				<view class="repayView" v-if="cardItem.durationCurrentRepayment > 0 && cardItem.willRepaymentMoney > 0">
+					<view class="cell">
+						<text v-if="cardItem.durationCurrentRepayment == 1" class="redText">今天之内</text>
+						<text v-else class="redText">{{cardItem.durationCurrentRepayment}}天之内</text>
+						<text class="redText">需要还款：</text><text>{{cardItem.willRepaymentMoney}}</text>
+					</view>
+					<view class="cell">
+						<button type="primary" size="mini" @click="clickMarkRepaymentCard(cardItem._id)">标记还款</button>
+					</view>
 				</view>
 				<view class="cell willRepayView" v-if="cardItem.waitRepaymentMoney > 0">
 					<text class="greenText">{{cardItem.durationNextBill}}天后会出新账单</text>
@@ -50,7 +56,7 @@
 	export default {
 		data() {
 			return {
-				cardRecord: undefined,
+				cardRecord: '',
 				cardList: [],
 				loginStatus: false,
 				cardId: undefined
@@ -100,6 +106,31 @@
 					})
 				}
 			},
+			clickMarkRepaymentCard (cardId) {
+				let self = this
+				uni.showModal({
+					title:'提示',
+					content:'确定标记该信用卡已还款吗?',
+					success(res) {
+						if (res.confirm) {
+							self.repaymentCard(cardId)
+						} else if (res.cancel) {}
+					}
+				})
+			},
+			repaymentCard (cardId) {
+				Util.post('/money/v1/user/repaymentCard', {userId: Util.getUserId(), cardId: cardId}, (err, res) => {
+					if (res && res.isSuccess()) {
+						uni.showToast({
+							title:'标记还款成功',
+							duration:2000
+						})
+						this.cardRecord = ''
+						this.cardList = []
+						this._requestCardsInfo()
+					}
+				})
+			},
 			_requestPayRecords () {
 				let userId = Util.getUserId()
 				Util.get('/money/v1/user/getPayRecordList', {userId: userId}, (err, res) => {
@@ -142,7 +173,10 @@
 		margin-left: 10upx;
 	}
 	.repayView{
-		color: #f00;
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
 	}
 	.willRepayView {
 		color: #ff0;
