@@ -63,7 +63,7 @@
 			requestShopData () {
 				if (this.shopId) {
 					Util.get('/money/v1/user/getShop', {shopId: this.shopId}, (err, res) => {
-						if (res && res.isSuccess) {
+						if (res && res.isSuccess()) {
 							let shopM = res.Body
 							this.shopName = shopM.name
 							this.mobile = shopM.mobile
@@ -200,6 +200,7 @@
 						fileType: 'image',
 						name: 'file',
 						formData: {'type':'shopImage'},
+						header: Util.getCommonHeader(),
 						success: (res) => {
 							let response = JSON.parse(res.data)
 							console.log(response.Header.ErrCode === 0)

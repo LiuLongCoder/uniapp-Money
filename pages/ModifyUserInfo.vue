@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="inline nameView commmonInputContainer">
 			<text class="labelText">姓名：</text>
-			<input class="nameInput" placeholder="请输入名字" @input="onNameKeyInput" :value="name" />
+			<input class="nameInput" disabled="true" placeholder="请输入名字" @input="onNameKeyInput" :value="name" />
 		</view>
 		<view class="inline IDCardView commmonInputContainer">
 			<text class="labelText">身份证号：</text>

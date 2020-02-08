@@ -109,18 +109,19 @@
 					} else {
 						if (res.isSuccess()) {
 							uni.$emit(Util.Constant.Notice_AddCreditCard)
+							let self = this
 							uni.showModal({
 								title:'提示',
 								content:'添加成功',
 								confirmText:"继续添加",
 								success(res) {
 									if (res.confirm) {
-										this.cardNumber = ''
-										this.bank = ''
-										this.mobile = ''
-										this.limit = ''
-										this.billDayStr = ''
-										this.repaymentDayStr = ''
+										self.cardNumber = ''
+										self.bank = ''
+										self.mobile = ''
+										self.limit = ''
+										self.billDayStr = ''
+										self.repaymentDayStr = ''
 									} else if (res.cancel) {
 										uni.navigateBack()
 									}
@@ -147,7 +148,7 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
 		padding-top: 40upx;
 		padding-left: 20upx;
 		padding-right: 20upx;

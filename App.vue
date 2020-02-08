@@ -6,6 +6,8 @@
 			uni.$on(Util.Constant.Notice_UpdateUserInfo, () => {
 				this._requestUserInfo()
 			})
+			this._requestCheckAppUpgrade()
+			
 		},
 		onShow: function() {
 			console.log('App Show')
@@ -30,6 +32,39 @@
 						}
 					})
 				}
+			},
+			_requestCheckAppUpgrade () {
+				// #ifdef APP-PLUS
+				Util.get('/money/v1/user/register', null, (err, res) => {
+					if (res && res.isSuccess()) {
+						let appM = res.Body
+						let isForceUpgrade = appM.forceUpgrade === 1
+						let version = plus.runtime.version
+						if (version !== appM.version) {
+							let upgradeDescription = appM.upgradeDescription ? appM.upgradeDescription : '有升级版本'
+							let message = `当前版本:${version}\n最新版本:${appM.version}\n\n更新内容为:${upgradeDescription}\n\n下载地址已经复制到剪切板,自己去浏览器粘贴打开`
+							let upgradeUrl = appM.dandelion ? appM.dandelion : appM.fir
+							if (upgradeUrl) {
+								uni.setClipboardData({
+									data: upgradeUrl,
+									success() {
+										uni.showModal({
+											title:'升级',
+											content:message,
+											showCancel:!isForceUpgrade,
+											confirmText:'确定',
+											success(res) {
+												
+											}
+										})
+									}
+								})
+								
+							}
+						}
+					}					
+				})
+				// #endif
 			}
 		}
 	}
