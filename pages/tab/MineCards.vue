@@ -2,12 +2,11 @@
 	<view class="content">
 		<view class="content" v-if="loginStatus">
 			<text class="topText">Hello , 尊敬的 {{userName}}</text>
-			<scroll-view>
-				<view class="cardCell" v-bind:key="cIdx" v-for="(card, cIdx) in cardList">
+			<scroll-view class="scrollView">
+				<view class="cardCell" v-bind:key="cIdx" v-for="(card, cIdx) in cardList" @click="tapCardAction(card)">
 					<text>{{card.bank}}</text>
-					<text v-if="card.cardNumber && card.cardNumber.length > 8">{{card.cardNumber.substring(0, 4) + '****' + card.cardNumber.substr(card.cardNumber.length - 4)}}</text>
-					<text v-else>{{card.cardNumber}}</text>
-					<text> 额度{{card.limit}}</text>
+					<text>{{card.cardNumber}}</text>
+					<!-- <text> 额度{{card.limit}}</text> -->
 				</view>
 				<view v-if="loginStatus && cardList.length > 0">
 					<button class="commonBtn addPayRecordBtn" type="primary" @click="addPayRecordAction"> 增加消费记录 </button>
@@ -114,6 +113,14 @@
 					url: '../TransferPay?type=user&title=刷卡记录'
 				})
 			},
+			tapCardAction (card) {
+				if (!this.verifyLogin()) {
+					return
+				}
+				uni.navigateTo({
+					url: `../PayRecode?cardId=${card._id}&title=${card.bank + card.cardNumber}`
+				})
+			},
 			_requestAllCards() {
 				if (Util.User.isLogin()) {
 					let userId = Util.getUserId()
@@ -188,7 +195,10 @@
 		padding-left: 20upx;
 		padding-right: 20upx;
 	}
-
+	.scrollView {
+		width: 660upx;
+		justify-content: space-between;
+	}
 	.topText {
 		display: flex;
 		justify-content: center;
@@ -203,7 +213,7 @@
 
 	.commonBtn {
 		margin-top: 40upx;
-		/* width: 80%; */
+		width: 500upx;
 		height: 65upx;
 		font-size: 28upx;
 		justify-content: center;
@@ -211,7 +221,8 @@
 	}
 
 	text {
-		font-size: 30upx;
-		color: #666;
+		font-size: 34upx;
+		color: #00f;
+		margin-top: 20upx;
 	}
 </style>

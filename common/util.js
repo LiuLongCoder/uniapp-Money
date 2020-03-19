@@ -4,6 +4,7 @@ const MD5 = require('./md5.js')
 
 // h5 node server npm : connect-history-api-fallback
 let globalUUID = ''
+let gloablSystemInfo = uni.getSystemInfoSync()	// 获取系统信息
 // #ifdef APP-PLUS
 plus.device.getInfo({
 		success:function(e){
@@ -18,7 +19,7 @@ plus.device.getInfo({
 
 const Constant = {
 	serverHost: 'http://liulong.site',
-	// serverHost: 'http://192.168.2.38',
+	// serverHost: 'http://172.20.10.11',
 	userId: _getUserId(),
 	StorageKey_UserId: 'StorageKey_UserId',
 	StorageKey_UserJson: 'StorageKey_UserJson',
@@ -32,6 +33,23 @@ const Constant = {
 	Notice_AddShop: 'Notice_AddShop',
 	Notice_AddCreditCard: 'Notice_AddCreditCard',
 	Notice_UpdateUserInfo: 'Notice_UpdateUserInfo'
+}
+
+function getCommonHeader () {
+	let osType = gloablSystemInfo.platform // iOS , Android
+	let region = '0' // 0: bookCity, 1: Snaplearn
+	let headerJson = {userId: _getUserId(), osType: osType && osType.toLowerCase(), deviceId: globalUUID, timstamp: new Date().getTime()}
+	Object.assign(headerJson, gloablSystemInfo)
+	// #ifdef APP-PLUS
+	headerJson.version = plus.runtime.version
+	headerJson.bundleId = plus.runtime.appid
+	// #endif
+	let jsonString = JSON.stringify(headerJson)
+	let signature = MD5.hex_md5('luka' + jsonString + 'luka').toLowerCase()
+	headerJson.jsonString = jsonString
+	headerJson.signature = signature
+	let headerJsonEncoderStr  = JSON.stringify(headerJson)
+	return { 'app-header': headerJsonEncoderStr}
 }
 
 function _getUserId() {
@@ -51,35 +69,32 @@ function _request(url, method, param, callback, complete) {
 			url = Constant.serverHost + url
 		}
 	}
-	
-	let osType = uni.getSystemInfoSync().platform // iOS , Android
-	let region = '0' // 0: bookCity, 1: Snaplearn
-	let headerJson = {userId: _getUserId(), osType: osType, deviceId: globalUUID, timstamp: new Date().getTime()}
-	// #ifdef APP-PLUS
-	headerJson.appVersion = plus.runtime.version
-	// #endif
-	let jsonString = JSON.stringify(headerJson)
-	let signature = MD5.hex_md5('luka' + jsonString + 'luka').toLowerCase()
-	headerJson.jsonString = jsonString
-	headerJson.signature = signature
-	let headerJsonEncoderStr  = JSON.stringify(headerJson)
-	
+
 	uni.request({
 		url: url,
 		method: method,
-		header:{'money-header': headerJsonEncoderStr},
+		header:getCommonHeader(),
 		data: param,
 		success: res => {
 			// res.data.Body = MXREncryption.decryptionMxr(res.data.Body, true)
+			/// 如果请求失败,提示出来
+			if (res.statusCode !== 200) {
+				uni.showModal({
+					title:'appErr',
+					content: `res status: ${res.statusCode} url: ${url}`,
+					showCancel: false
+				})
+			}
 			try {
-				// res.data.Body = JSON.parse(res.data.Body)
-			} catch (e) {
-				console.log('>>> parse json error :', e)
-			} finally {
 				if (callback) {
 					let response = Response.builderWithResponse(res.data)
 					callback(null, response)
 				}
+				// res.data.Body = JSON.parse(res.data.Body)
+			} catch (e) {
+				console.log('>>> parse json error :', e)
+			} finally {
+				
 			}
 		},
 		fail: (err) => {
@@ -107,5 +122,6 @@ export default {
 	setUserId: _setUserId,
 	get: get,
 	post: post,
-	md5: MD5.hex_md5
+	md5: MD5.hex_md5,
+	getCommonHeader: getCommonHeader
 }

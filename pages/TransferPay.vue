@@ -26,7 +26,7 @@
 							<text class="nameText">{{luka.name}}</text>
 							<text>店里</text>
 							<view class="" v-bind:key="sIdx" v-for="(spendItem, sIdx) in luka.spendArray">
-								<text>刷了给{{spendItem.count}}笔</text>
+								<text>刷了共{{spendItem.count}}笔</text>
 								<text>共{{spendItem.price}}元</text>
 								<text>产生利润：</text>
 								<text class="priceText">{{spendItem.returnPrice}}</text>

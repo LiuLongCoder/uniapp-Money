@@ -12,11 +12,20 @@
 				</picker>
 				<text class="searchText" @click="_requestPayRecords">搜索</text>
 			</view>
-			<view class="recordCell" v-bind:key="rIdx" v-for="(record, rIdx) in payRecordList">
+			<view class="totalMoneyView" v-if="totalMoney">
+				<text>总金额:</text>
+				<text class="totalMoneyText">{{totalMoney}}</text>
+			</view>
+			<view class="recordCell" v-bind:key="rIdx" v-for="(record, rIdx) in payRecordList" @longpress="_longPressRecord(record)">
 				<text>{{record.dateStr}}</text>
 				<text>{{record.price}}</text>
 				<text>{{record.card && record.card.bank}}</text>
 				<text>{{record.shop && record.shop.name}}</text>
+				<text v-if="record.card && record.card.user && record.card.user.name">{{record.card.user.name}}</text>
+			</view>
+			<view class="totalMoneyView" v-if="totalMoney">
+				<text>总金额:</text>
+				<text class="totalMoneyText">{{totalMoney}}</text>
 			</view>
 			<view class="bottomTipView" v-if="showLoadMoreFlag">加载更多...</view>
 			<view class="bottomTipView" v-if="noMoreDateFlag">没有更多数据了</view>
@@ -63,6 +72,7 @@
 				fromEndDate: getDate('end'),
 				toStartDate: getDate('start'),
 				toEndDate: getDate('end'),
+				totalMoney: 0
 			}
 		},
 		onNavigationBarButtonTap(e) {
@@ -73,7 +83,9 @@
 			this.shopId = option.shopId
 			let title = option.title
 			if (title) {
-				uni.setNavigationBarTitle({ title: title })
+				uni.setNavigationBarTitle({
+					title: title
+				})
 			}
 			this._requestPayRecords()
 		},
@@ -97,9 +109,9 @@
 				this.loading = false
 				this.showLoadMoreFlag = false
 				this.noMoreDateFlag = false
-				console.log('onPullDownRefresh');
 				this.page = 0
 				this.payRecordList = []
+				this.totalMoney = 0
 			},
 			toggleDateChecked() {
 				this.dateChecked = !this.dateChecked
@@ -179,7 +191,7 @@
 						} else {
 							uni.showModal({
 								content: '请保证时间先后顺序',
-								showCancel:false
+								showCancel: false
 							})
 							this.initData()
 							return
@@ -190,7 +202,7 @@
 						this.loading = false
 						this.showLoadMoreFlag = false
 						uni.stopPullDownRefresh()
-						if (res && res.isSuccess) {
+						if (res && res.isSuccess()) {
 							let tmpArray = this.payRecordList
 							let resultArray = res.Body
 							if (resultArray.length > 0) {
@@ -199,10 +211,49 @@
 								this.noMoreDateFlag = true
 							}
 							for (let key in resultArray) {
-								tmpArray.push(resultArray[key])
+								let record = resultArray[key]
+								tmpArray.push(record)
+								this.totalMoney += record.price
 							}
 							this.payRecordList = tmpArray
-							// console.log('get pay records: ', res)
+							console.log('get pay records: ', res)
+						}
+					})
+				}
+			},
+			_longPressRecord(record) {
+				let self = this
+				uni.showModal({
+					title: '删除操作',
+					content: `确定删除< ${record.dateStr} ${record.card && record.card.bank}  ${record.shop && record.shop.name} ￥${record.price}> 这条记录吗？`,
+					success: function (res) {
+						if (res.confirm) {
+							self._deletePayRecord(record._id)
+						} else {
+							
+						}
+					}
+				})
+			},
+			_deletePayRecord(recordId) {
+				console.log('will delete: ', recordId)
+				// return
+				if (recordId) {
+					Util.post('/money/v1/user/deletePayRecord', {
+						recordId: recordId
+					}, (err, res) => {
+						if (res && res.isSuccess()) {
+							uni.showModal({
+								content: '删除成功',
+								showCancel: false
+							})
+							this.initData()
+						} else {
+							uni.showModal({
+								title: '警报',
+								content: (err && err.errMsg) || (res && res.Header.ErrMsg),
+								showCancel: false
+							})
 						}
 					})
 				}
@@ -220,43 +271,52 @@
 		padding-left: 20upx;
 		padding-right: 20upx;
 	}
+
 	.conditionView {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-top: 30upx;
-		margin-bottom: 30upx;
+		margin-top: 20upx;
+		margin-bottom: 10upx;
 	}
+
 	.pickerText {
 		padding: 8upx 15upx 8upx 5upx;
 		border: #007AFF 1px solid;
 		border-radius: 8upx;
 	}
+
 	.searchText {
 		padding: 8upx 15upx 8upx 5upx;
 		border: #0000FF 1px solid;
 		border-radius: 8upx;
 	}
+
 	.block {
 		display: block;
 	}
+
 	.cardView {
 		margin-top: 20upx;
 	}
+
 	.recordCell {
 		display: flex;
 		justify-content: flex-start;
 	}
+
 	.inline {
 		display: flex;
 		align-items: center;
 		align-content: center;
 	}
+
 	text {
 		font-size: 24upx;
 		color: #666;
 		margin-left: 10upx;
 	}
+
 	.bottomTipView {
 		display: flex;
 		justify-content: center;
@@ -264,5 +324,14 @@
 		font-size: 30upx;
 		color: #999;
 		margin-top: 20upx;
+	}
+
+	.totalMoneyView {
+		margin-top: 15upx;
+		margin-bottom: 15upx;
+	}
+
+	.totalMoneyText {
+		color: #0011FF;
 	}
 </style>

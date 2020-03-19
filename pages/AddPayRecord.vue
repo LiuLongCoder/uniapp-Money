@@ -1,12 +1,6 @@
 <template>
 	<view class="content">
 		<view class="cell inline">
-			<text>选择银行卡：</text>
-			<picker class="cardPiker" @change="bindCardPickerChange" :value="cardIndex" :range="cardArray" range-key="name">
-				<text class="pickerText">{{cardArray[cardIndex].name}}</text>
-			</picker>
-		</view>
-		<view class="cell inline">
 			<text>选择门店：</text>
 			<picker class="cardPiker" mode="multiSelector" @columnchange="bindShopPickerChange" :value="shopIndexArray" :range="allShopArrayDataSource" range-key="name">
 				<text class="pickerText">{{allShopArrayDataSource[1][shopIndexArray[1]].name}}</text>
@@ -15,6 +9,12 @@
 		<block v-if="shopQRCodeImageSrc">
 			<image :src="shopQRCodeImageSrc" class="qrcodeimage" mode="widthFix"></image>
 		</block>
+		<view class="cell inline">
+			<text>选择银行卡：</text>
+			<picker class="cardPiker" @change="bindCardPickerChange" :value="cardIndex" :range="cardArray" range-key="name">
+				<text class="pickerText">{{cardArray[cardIndex].name}}</text>
+			</picker>
+		</view>
 		<view class="cell inline">
 			<text>支付途径：</text>
 			<picker class="cardPiker" @change="bindPayWayPickerChange" :value="payWayIndex" :range="payWayArray" range-key="name">
@@ -225,6 +225,7 @@
 				Util.post('/money/v1/user/addPayRecord', addRecordJson, (err, res) => {
 					if (res && res.isSuccess()) {
 						console.log('add pay record success')
+						let self = this
 						uni.showModal({
 							title: '提示',
 							content: `添加消费记录成功`,
@@ -233,7 +234,7 @@
 							confirmText: '继续添加',
 							success: res => {
 								if (res.confirm) {
-									this.price = ''
+									self.price = ''
 								} else if (res.cancel) {
 									uni.navigateBack();
 								}
@@ -261,6 +262,7 @@
 		padding-top: 40upx;
 		padding-left: 20upx;
 		padding-right: 20upx;
+		padding-bottom: 160upx;
 	}
 	.inline {
 		display: flex;
